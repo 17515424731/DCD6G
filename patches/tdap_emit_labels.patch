@@ -1,0 +1,9 @@
+diff --git a/src/main.py b/src/main.py
+--- a/src/main.py
++++ b/src/main.py
+@@
+-    print ("Original Probs:", orig_probs)
+-    print ("Attacked Probs:", np.stack(pred_attkd))
++    print ("Target Labels:", y_targets)
++    print ("Original Probs:", orig_probs)
++    print ("Attacked Probs:", np.stack(pred_attkd))

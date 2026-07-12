@@ -1,0 +1,24 @@
+diff --git a/models/model_wrapper.py b/models/model_wrapper.py
+index 67c6a70..d39189b 100644
+--- a/models/model_wrapper.py
++++ b/models/model_wrapper.py
+@@ -1,3 +1,4 @@
++import inspect
+ import torch
+ import torch.nn.functional as F
+ import torch_geometric_temporal as tgtemp
+@@ -60,8 +61,12 @@ class DynGraphVictim(torch.nn.Module):
+         self.debugging = debugging
+         self.dropout = dropout
+         if (model_name == 'GCLSTM'):
+-            self.encoder = tgtemp.GCLSTM(in_channels=nfeats, out_channels=emb_size, 
+-                                        K=chebyK, normalization='sym' if gcn_normalize else None, debugging=debugging)
++            gclstm_kwargs = dict(in_channels=nfeats, out_channels=emb_size,
++                                 K=chebyK, normalization='sym' if gcn_normalize else None)
++            gclstm_params = inspect.signature(tgtemp.GCLSTM.__init__).parameters
++            if 'debugging' in gclstm_params:
++                gclstm_kwargs['debugging'] = debugging
++            self.encoder = tgtemp.GCLSTM(**gclstm_kwargs)
+             out_size = emb_size
+         elif (model_name == 'EvGCNH'):
+             self.encoder = tgtemp.EvolveGCNH(num_of_nodes=nnodes, in_channels=nfeats, normalize=gcn_normalize)

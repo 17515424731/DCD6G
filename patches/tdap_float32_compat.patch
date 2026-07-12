@@ -1,0 +1,88 @@
+diff --git a/models/model_wrapper.py b/models/model_wrapper.py
+index d39189b..d23be39 100644
+--- a/models/model_wrapper.py
++++ b/models/model_wrapper.py
+@@ -122,11 +122,11 @@ class DynGraphVictim(torch.nn.Module):
+             raise NotImplemented
+         return h
+ 
+     def hist_forward(self, x, edge_indices, edge_weights, return_all_times=False):
+-        x = self.to_device(x)
++        x = self.to_device(x).float()
+         edge_indices, edge_weights = self.to_device(edge_indices), self.to_device(edge_weights)
+-        edge_weights = [ew.double() for ew in edge_weights]
++        edge_weights = [ew.float() for ew in edge_weights]
+         embs_t = []
+         if self.debugging:
+             print (get_gpu_info(self.device))
+         if (self.model_name == 'GCLSTM'):
+diff --git a/models/train_models.py b/models/train_models.py
+index 3c3145b..d308e9d 100644
+--- a/models/train_models.py
++++ b/models/train_models.py
+@@ -92,7 +92,7 @@ sampler_loader = lambda snap: DataLoader(LinkPredSampler(snap, neg_sample_size=n
+ model = DynGraphVictim(task=task, model_name=model_name, num_graphs=num_graphs, historical_len=context_size, nfeats=nfeats, nnodes=nnodes, emb_size=emb_size, 
+                 decoder_sizes=decoder_sizes, chebyK=args.chebyK, dys_struc_head=args.dys_struc_head, dys_struc_layer=args.dys_struc_layer,
+                 dys_temp_head=args.dys_temp_head, dys_temp_layer=args.dys_temp_layer, dys_spa_drop=args.dys_spa_drop, 
+-                dys_temp_drop=args.dys_temp_drop, dys_residual=args.dys_residual, device=device, debugging=True).to(torch.double).to(device)
++                dys_temp_drop=args.dys_temp_drop, dys_residual=args.dys_residual, device=device, debugging=True).to(torch.float).to(device)
+ 
+ bce_loss = BCEWithLogitsLoss(reduction='sum')
+ optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+@@ -112,7 +112,7 @@ for epoch in tqdm(range(num_epochs), position=0, desc='Outer'):
+         if (t > min_time):
+             # static node features
+             for pos_edges, neg_edges in tqdm(sampler_loader(t_snapshot), position=1, desc='Inner'):
+-                emb_t = model.hist_forward (graphs_t[-1].x.double(), graphs_t.edge_indices, graphs_t.edge_weights)
++                emb_t = model.hist_forward (graphs_t[-1].x.float(), graphs_t.edge_indices, graphs_t.edge_weights)
+                 pos_score = model.predict(emb_t, pos_edges)
+                 neg_score = model.predict(emb_t, neg_edges)
+                 pos_loss = bce_loss(pos_score, torch.ones_like(pos_score))/pos_edges.shape[0]
+@@ -124,7 +124,7 @@ for epoch in tqdm(range(num_epochs), position=0, desc='Outer'):
+                 if (args.logging):
+                     from sklearn.metrics import roc_auc_score
+                     with torch.no_grad():
+-                        emb = model.hist_forward (graphs_t[-1].x.double(), graphs_t.edge_indices, graphs_t.edge_weights)
++                        emb = model.hist_forward (graphs_t[-1].x.float(), graphs_t.edge_indices, graphs_t.edge_weights)
+                         preds = model.predict(emb, torch.tensor(data.test_mask)).detach().cpu().numpy().squeeze()
+                         # print (np.histogram(preds))
+                         test_auc = roc_auc_score (data.test_y, preds)
+@@ -144,7 +144,7 @@ if not (os.path.exists(os.path.dirname(model_file_name))):
+ 
+ from sklearn.metrics import roc_auc_score
+ with torch.no_grad():
+-    emb = model.hist_forward (graphs_t[-1].x.double(), graphs_t.edge_indices, graphs_t.edge_weights)
++    emb = model.hist_forward (graphs_t[-1].x.float(), graphs_t.edge_indices, graphs_t.edge_weights)
+     preds = model.predict(emb, torch.tensor(data.test_mask)).detach().cpu().numpy().squeeze()
+     np.save(model_file_name.replace('model', 'preds')[:-3] + ".npy", preds)
+     test_auc = roc_auc_score (data.test_y, preds)
+diff --git a/src/main.py b/src/main.py
+index 26d70d7..0f01320 100644
+--- a/src/main.py
++++ b/src/main.py
+@@ -76,4 +76,4 @@ if not (cmd_args.task in ['link_prediction', 'node_classification']):
+ def load_base_model():
+     base_model = load_model(cmd_args.saved_model)
+     base_model.device = cmd_args.device
+-    return base_model.to(torch.double).to(cmd_args.device)
++    return base_model.to(torch.float).to(cmd_args.device)
+diff --git a/src/main_feat.py b/src/main_feat.py
+index f4cdba9..eaf5b5f 100644
+--- a/src/main_feat.py
++++ b/src/main_feat.py
+@@ -76,4 +76,4 @@ if not (cmd_args.task in ['link_prediction', 'node_classification']):
+ def load_base_model():
+     base_model = load_model(cmd_args.saved_model)
+     base_model.device = cmd_args.device
+-    return base_model.to(torch.double).to(cmd_args.device)
++    return base_model.to(torch.float).to(cmd_args.device)
+diff --git a/src/main_online.py b/src/main_online.py
+index db49cfa..6f14b9e 100644
+--- a/src/main_online.py
++++ b/src/main_online.py
+@@ -72,4 +72,4 @@ if not (cmd_args.task in ['link_prediction', 'node_classification']):
+ def load_base_model():
+     base_model = load_model(cmd_args.saved_model)
+     base_model.device = cmd_args.device
+-    return base_model.to(torch.double).to(cmd_args.device)
++    return base_model.to(torch.float).to(cmd_args.device)

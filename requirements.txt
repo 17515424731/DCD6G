@@ -1,0 +1,8 @@
+numpy>=1.24
+scikit-learn>=1.5
+matplotlib>=3.5
+torch>=2.1
+
+# Optional for the TDAP-compatible third-party pipeline:
+# torch-geometric
+# torch-geometric-temporal

@@ -1,0 +1,10 @@
+timestamp,vehicle_id,x,y
+0,vehicle_001,12.4,5.8
+0,vehicle_002,38.7,18.2
+0,vehicle_003,91.5,42.6
+1,vehicle_001,13.1,6.2
+1,vehicle_002,39.4,18.9
+1,vehicle_003,92.0,43.4
+2,vehicle_001,13.8,6.7
+2,vehicle_002,40.2,19.3
+2,vehicle_003,92.6,44.1

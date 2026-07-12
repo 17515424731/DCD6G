@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+env/
+.verify-venv/
+tmp/
+logs/
+outputs/
+outputs_tune/
+outputs_full/
+outputs_wireless/
+raw_data/
+scripts/generated/
+third_party/
+*.zip

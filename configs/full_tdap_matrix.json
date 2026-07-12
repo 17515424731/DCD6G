@@ -1,0 +1,76 @@
+{
+  "tdap_root": "third_party/TDAP",
+  "seeds": [123, 483, 665, 811, 789, 2026, 3407, 7777, 9001, 42],
+  "models": ["DySAT", "EvGCNO", "GCLSTM"],
+  "epsilons": [0.05, 0.10],
+  "attack": {
+    "method": "pgd",
+    "constraint": "noise",
+    "epsilon1": 100,
+    "num_steps": 50,
+    "lambda1": 0.0,
+    "khop": 2,
+    "lr_init": 10,
+    "ntargets": 1,
+    "num_samples": 100,
+    "sampling": "None",
+    "inits": "ones",
+    "neg_sampling": true,
+    "use_optim": true
+  },
+  "training": {
+    "nepochs": 500,
+    "learning_rate": 0.0001,
+    "emb_size": 32,
+    "decoder_sizes": [32, 32],
+    "chebyK": 5,
+    "batch_size": 128,
+    "neg_weight": 0.001,
+    "neg_sample_size": 100,
+    "min_time_perc": 0.6,
+    "sample_prop": 0.1
+  },
+  "datasets": [
+    {
+      "paper_name": "BTC-OTC",
+      "tdap_name": "bitcoin_otc",
+      "task": "link_prediction",
+      "num_graphs": 20,
+      "context": 19,
+      "target_ts": 19,
+      "featureless": false,
+      "dyn_feats": true
+    },
+    {
+      "paper_name": "DBLP-Coauthors",
+      "tdap_name": "dblp_coauthors",
+      "task": "link_prediction",
+      "num_graphs": 20,
+      "context": 19,
+      "target_ts": 19,
+      "featureless": false,
+      "dyn_feats": true
+    },
+    {
+      "paper_name": "Bonanza",
+      "tdap_name": "bonanza",
+      "task": "link_prediction",
+      "num_graphs": 20,
+      "context": 19,
+      "target_ts": 19,
+      "featureless": false,
+      "dyn_feats": true
+    },
+    {
+      "paper_name": "MAG",
+      "tdap_name": "mag",
+      "task": "link_prediction",
+      "num_graphs": 20,
+      "context": 19,
+      "target_ts": 19,
+      "featureless": false,
+      "dyn_feats": true
+    }
+  ]
+}
+
