@@ -10,7 +10,6 @@ TD-PGD evaluation, F1 reporting, model checkpointing, and t-SNE visualization.
 
 - Python 3.9 or newer
 - PyTorch
-- PyTorch Geometric
 - NumPy
 - scikit-learn
 - matplotlib
